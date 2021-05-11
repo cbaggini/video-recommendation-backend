@@ -21,13 +21,18 @@ app.get("/", async function (req, res) {
   const orderQuery = req.query.order;
   let query = "SELECT * FROM videos";
   if (searchQuery) {
-    query = `SELECT * FROM videos WHERE lower(title) LIKE '%${searchQuery}%`;
+    query = `SELECT * FROM videos WHERE lower(title) LIKE '%${searchQuery}%'`;
   }
   if (orderQuery === "asc") {
-    query += "ORDER BY title";
+    query += " ORDER BY title";
   } else if (orderQuery === "desc") {
-    query += "ORDER BY title DESC";
+    query += " ORDER BY title DESC";
+  } else if (orderQuery === "asc_rating") {
+    query += " ORDER BY rating";
+  } else if (orderQuery === "desc_rating") {
+    query += " ORDER BY rating DESC";
   }
+  console.log(query);
   const client = await pool.connect();
   client.query(query, (error, result) => {
     res.json(result.rows);
@@ -40,7 +45,6 @@ app.post("/", async function (req, res) {
   const newURL = req.body.url;
   if (newTitle && newURL) {
     const client = await pool.connect();
-    console.log("connected");
     await client.query("INSERT INTO videos (title, link) VALUES ($1, $2)", [
       newTitle,
       newURL,
