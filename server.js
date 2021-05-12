@@ -32,7 +32,6 @@ app.get("/", async function (req, res) {
   } else if (orderQuery === "desc_rating") {
     query += " ORDER BY rating DESC";
   }
-  console.log(query);
   const client = await pool.connect();
   client.query(query, (error, result) => {
     res.json(result.rows);
@@ -82,6 +81,30 @@ app.get("/:id", async function (req, res) {
     })
     .catch((e) => console.error(e));
   client.release();
+});
+
+app.put("/:id", async function (req, res) {
+  const id = req.params.id;
+  const newRating = req.body.rating;
+
+  if (Number.isInteger(newRating)) {
+    const client = await pool.connect();
+    client
+      .query("UPDATE videos SET rating=$1 where id=$2", [newRating, id])
+      .then(() => res.json({ rating: newRating }))
+      .catch((e) =>
+        res.status(400).json({
+          result: "failure",
+          message: "rating could not be updated",
+        })
+      );
+    client.release();
+  } else {
+    res.status(400).json({
+      result: "invalid input",
+      message: "rating was not provided",
+    });
+  }
 });
 
 app.delete("/:id", async function (req, res) {
