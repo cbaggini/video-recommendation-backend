@@ -7,7 +7,7 @@ const corsOptions = {
   origin:
     process.env.MODE == "dev"
       ? "http://localhost:3000"
-      : "https://cyf-cbaggini-video-recommender.netlify.app/",
+      : "https://cyf-cbaggini-video-recommender.netlify.app",
   optionsSuccessStatus: 200,
 };
 
